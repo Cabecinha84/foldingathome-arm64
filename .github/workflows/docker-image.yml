@@ -1,10 +1,7 @@
-name: Docker Image CI
+name: Flux Folding@home Arm64
 
 on:
-  push:
-    branches: [ main, development ]
-  pull_request:
-    branches: [ main, development ]
+  workflow_dispatch:
 
 jobs:
   buildx:
@@ -23,10 +20,13 @@ jobs:
       -
         name: Available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
+      - 
+        name: login to docker hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       -
         name: Run Buildx
         run: |
           docker buildx build \
             --platform linux/arm64 \
-            --output "type=image,push=false" \
-            --tag beastob/foldingathome-arm64:latest --file Dockerfile .
+            --output "type=image,push=true" \
+            --tag runonflux/folding-at-home:1.1 --file Dockerfile .
